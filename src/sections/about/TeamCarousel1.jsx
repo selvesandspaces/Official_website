@@ -428,11 +428,11 @@ export default function TeamCarousel() {
               style={{ background: "#323b10" }}
             >
               <div
-                className="absolute -top-32 -left-32 w-[420px] h-[420px] rounded-full pointer-events-none"
+                className="absolute -top-32 -left-32 w-105 h-105 rounded-full pointer-events-none"
                 style={{ border: "1px solid rgba(245,240,232,0.06)" }}
               />
               <div
-                className="absolute -bottom-20 -right-20 w-[280px] h-[280px] rounded-full pointer-events-none"
+                className="absolute -bottom-20 -right-20 w-70 h-70 rounded-full pointer-events-none"
                 style={{ border: "1px solid rgba(245,240,232,0.06)" }}
               />
               <div>
