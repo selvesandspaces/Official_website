@@ -1,0 +1,15 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+
+@theme {
+  --color-cream: #F5F0E8;
+  --color-green-deep: #2C3B2D;
+  --color-sage: #8A9E85;
+  --color-ink: #1C1C1A;
+  --color-warm: #C4956A;
+
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body: 'Jost', sans-serif;
+  /* TODO: replace with Buffalo font file once asset is provided */
+  --font-cursive: 'Great Vibes', cursive;
+}
