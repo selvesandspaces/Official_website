@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="config.js"></script>
+<script src="share.js"></script>
 <style>
   :root{
     --lavender-deep:#5B3E7D;
@@ -426,7 +427,19 @@
           <button class="btn gold" id="btn-gift">Claim my surprise gift</button>
         </div>
 
+        <button class="btn" id="btn-share">Share your result</button>
         <button class="btn secondary" id="btn-restart">Retake the quiz</button>
+      </div>
+      <p class="footer-note">Mental health struggles are common, treatable, and nothing to be ashamed of. If anything here felt heavy, please reach out to someone you trust — or a professional.</p>
+    </section>
+
+    <!-- ============ SHARED RESULT (public, read-only view) ============ -->
+    <section class="screen" id="screen-share">
+      <div class="card">
+        <div class="score-big" id="share-score">0/12</div>
+        <div class="score-label" id="share-tier">Score</div>
+        <div class="result-msg" id="share-msg"></div>
+        <a class="btn" id="share-cta" style="text-align:center; text-decoration:none; display:inline-flex;">Take the quiz yourself →</a>
       </div>
       <p class="footer-note">Mental health struggles are common, treatable, and nothing to be ashamed of. If anything here felt heavy, please reach out to someone you trust — or a professional.</p>
     </section>
@@ -530,12 +543,16 @@ const SHEETS_ENDPOINT = (window.QUIZ_CONFIG && window.QUIZ_CONFIG.SHORT_QUIZ_SHE
 // question's answer + final score as a single row.
 function submitFullQuiz(){
   if(!SHEETS_ENDPOINT || SHEETS_ENDPOINT.indexOf("PASTE_") === 0) return;
+  const sharePayload = buildSharePayload();
+  const shareUrl = window.QuizShare ? QuizShare.buildShareUrl(sharePayload) : '';
   const payload = {
     name: userName,
     dob: userDob,
     email: userEmail,
     score: String(score),
-    total: String(questions.length)
+    total: String(questions.length),
+    resultSummary: 'You scored ' + score + '/' + questions.length + ' (' + sharePayload.tier + ') on the Selves & Spaces short quiz.',
+    shareUrl: shareUrl
   };
   quizAnswers.forEach((a, i) => {
     payload['q' + (i + 1) + '_answer'] = a ? a.selected : '';
@@ -562,12 +579,45 @@ const screens = {
   quiz: document.getElementById('screen-quiz'),
   gate: document.getElementById('screen-gate'),
   results: document.getElementById('screen-results'),
+  share: document.getElementById('screen-share'),
 };
 
 function showScreen(name){
   Object.values(screens).forEach(s => s.classList.remove('active'));
   screens[name].classList.add('active');
   window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ---------- Shared result (public view via ?s=...) ----------
+function getTierLabel(pct){
+  if(pct >= 0.83) return 'Well-Informed';
+  if(pct >= 0.5) return 'Solid Start';
+  return 'Curious Beginner';
+}
+
+function buildSharePayload(){
+  const pct = questions.length ? score / questions.length : 0;
+  return {
+    n: (userName || '').split(' ')[0],
+    s: score,
+    t: questions.length,
+    tier: getTierLabel(pct)
+  };
+}
+
+function renderSharedView(data){
+  const total = data.t != null ? data.t : questions.length;
+  document.getElementById('share-score').textContent = (data.s != null ? data.s : '?') + '/' + total;
+  document.getElementById('share-tier').textContent = data.tier || '';
+  const name = data.n ? data.n : 'Someone';
+  document.getElementById('share-msg').textContent = name + "'s check-in on mental health awareness. Curious how you'd score?";
+  document.getElementById('share-cta').href = location.pathname;
+}
+
+const sharedPayload = window.QuizShare ? QuizShare.getSharedPayload() : null;
+if(sharedPayload){
+  renderSharedView(sharedPayload);
+  showScreen('share');
 }
 
 // ---------- Intake ----------
@@ -706,6 +756,21 @@ function renderResults(){
 document.getElementById('btn-gift').addEventListener('click', function(){
   this.textContent = "🎉 On its way to your inbox!";
   this.disabled = true;
+});
+
+document.getElementById('btn-share').addEventListener('click', async function(){
+  const btn = this;
+  const originalText = btn.textContent;
+  if(!window.QuizShare){ return; }
+  const url = QuizShare.buildShareUrl(buildSharePayload());
+  const result = await QuizShare.shareOrCopy(url, {
+    title: 'My Selves & Spaces quiz result',
+    text: 'I just took this mental health awareness quiz — check it out!'
+  });
+  if(result === 'copied') btn.textContent = 'Link copied!';
+  else if(result === 'shared') btn.textContent = 'Shared!';
+  else if(result === 'failed') btn.textContent = 'Could not share — try again';
+  setTimeout(() => { btn.textContent = originalText; }, 2500);
 });
 
 document.getElementById('btn-restart').addEventListener('click', () => {
