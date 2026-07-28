@@ -6,6 +6,7 @@
 <meta name="robots" content="noindex,nofollow">
 <title>DHR — A Mental Wellbeing Quiz for Men — Selves & Spaces</title>
 <script src="config.js"></script>
+<script src="share.js"></script>
 </head>
 <body>
 <style>
@@ -323,12 +324,16 @@
   // question's answer + final score as a single row.
   function submitFullQuiz() {
     if (!SHEETS_ENDPOINT || SHEETS_ENDPOINT.indexOf("PASTE_") === 0) return;
+    const sharePayload = buildSharePayload();
+    const shareUrl = window.QuizShare ? QuizShare.buildShareUrl(sharePayload) : '';
     const payload = {
       name: userInfo.name,
       dob: userInfo.dob,
       email: userInfo.email,
       score: String(totalScore),
-      total: String(95)
+      total: String(95),
+      resultSummary: 'DHR result: ' + sharePayload.cat + ' (score ' + totalScore + '/95) on the Selves & Spaces DHR quiz.',
+      shareUrl: shareUrl
     };
     dhrAnswers.forEach((ans, i) => {
       payload['q' + (i + 1) + '_answer'] = ans || '';
@@ -468,11 +473,25 @@
   const LIKERT_B = [5, 4, 3, 2, 1];
 
   // ---------- STATE ----------
-  let stage = 'intake'; // intake -> quiz -> gate -> result
+  let stage = 'intake'; // intake -> quiz -> gate -> result -> share
   let current = 0;
   let totalScore = 0;
   let q21Choice = "";
   let userInfo = { name: "", dob: "", email: "" };
+
+  // Builds the small, privacy-safe payload used for the shareable result link.
+  // Never include dob, email, or raw per-question answers here.
+  function buildSharePayload(){
+    const cat = getCategory(totalScore);
+    return {
+      n: (userInfo.name || '').split(' ')[0],
+      s: totalScore,
+      t: 95,
+      cat: cat.name,
+      arch: cat.archetype ? cat.archetype.name : null,
+      choice: q21Choice
+    };
+  }
   let dhrAnswers = [];
 
   const card = document.getElementById('dhrCard');
@@ -810,8 +829,24 @@
 
       <div class="dhr-closing">A Note on this Space: This check-in is just a simple tool to help you look into your own world and relationships; it is not a medical diagnosis or a therapy replacement. If the weight you are holding is causing deep anxiety, making you feel hopeless, or making it hard to get through your daily life, please respect yourself enough to bring someone else into your corner. Talking to a professional therapist or counselor is a profound way to share the load and find a healthier way to move forward.</div>
 
+      <button class="dhr-start-btn" id="shareBtn" style="margin-bottom:12px;">Share your reflection</button>
       <button class="dhr-restart" id="restartBtn">Take it again</button>
     `;
+
+    document.getElementById('shareBtn').addEventListener('click', async function(){
+      const btn = this;
+      const originalText = btn.textContent;
+      if(!window.QuizShare){ return; }
+      const url = QuizShare.buildShareUrl(buildSharePayload());
+      const result = await QuizShare.shareOrCopy(url, {
+        title: 'My DHR reflection',
+        text: 'I just took this men’s wellbeing check-in — take a look.'
+      });
+      if(result === 'copied') btn.textContent = 'Link copied!';
+      else if(result === 'shared') btn.textContent = 'Shared!';
+      else if(result === 'failed') btn.textContent = 'Could not share — try again';
+      setTimeout(() => { btn.textContent = originalText; }, 2500);
+    });
 
     document.getElementById('restartBtn').addEventListener('click', () => {
       stage = 'intake'; current = 0; totalScore = 0; q21Choice = "";
@@ -819,7 +854,46 @@
     });
   }
 
-  renderIntake();
+  // ---------- SHARED RESULT (public, read-only view) ----------
+  function renderShareView(data) {
+    progressWrap.style.display = 'none';
+    titleEl.textContent = "DHR";
+    titleSubEl.textContent = "A shared reflection";
+    subEl.textContent = "";
+    glow.style.background = 'radial-gradient(circle, rgba(217,164,65,0.28), transparent 70%)';
+
+    const name = data.n ? escapeHtml(data.n) : 'Someone';
+    const total = escapeHtml(data.t != null ? data.t : 95);
+    const scoreDisplay = escapeHtml(data.s != null ? data.s : '?');
+    const archHtml = data.arch
+      ? `<div class="dhr-archetype-name" style="margin-top:10px;">${escapeHtml(data.arch)}</div>`
+      : '';
+
+    card.innerHTML = `
+      <div class="dhr-result-score-row">
+        <div class="dhr-result-score">${scoreDisplay}<span>/${total}</span></div>
+      </div>
+      <div class="dhr-category">
+        <div class="dhr-category-name">${data.cat ? escapeHtml(data.cat) : ''}</div>
+        ${archHtml}
+        <p class="dhr-category-desc">${name}'s check-in on the Selves &amp; Spaces DHR men's wellbeing quiz.${data.choice ? ' What they’re longing for right now: "' + escapeHtml(data.choice) + '".' : ''}</p>
+      </div>
+      <button class="dhr-start-btn" id="tryItBtn">Take the quiz yourself</button>
+      <p class="dhr-privacy-note">This is a personal reflection, not a diagnosis. If anything here resonates and feels heavy, please reach out to someone you trust — or a professional.</p>
+    `;
+
+    document.getElementById('tryItBtn').addEventListener('click', () => {
+      window.location.href = location.pathname;
+    });
+  }
+
+  const sharedPayload = window.QuizShare ? QuizShare.getSharedPayload() : null;
+  if (sharedPayload) {
+    stage = 'share';
+    renderShareView(sharedPayload);
+  } else {
+    renderIntake();
+  }
 })();
 </script>
 </body>
