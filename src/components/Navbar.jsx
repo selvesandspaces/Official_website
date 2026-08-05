@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 const navLinks = [
   { label: "Who We Are", href: "/our team" },
   { label: "What We Do", href: "/what we offer" },
-  { label: "School Mental Health", href: "/school-mental-health" },
+  { label: "Mental Health Ecosystem", href: "/school-mental-health" },
   { label: "Partners", href: "/partners" },
   { label: "Assessments", href: "/assessments" },
   { label: "Resources", href: "/our work" },
@@ -23,7 +23,7 @@ const Navbar = () => {
           className="font-body text-[#1C1C1A] text-sm tracking-[0.2em] uppercase shrink-0"
         >
           Selves{" "}
-          <span className="font-cursive normal-case" style={{ fontSize: "1.4em", lineHeight: 1, letterSpacing: 0 }}>&</span>{" "}
+          <span style={{ fontFamily: "'EB Garamond', serif", fontSize: "1.5em", lineHeight: 1, letterSpacing: 0, fontWeight: 400 }}>&</span>{" "}
           Spaces
         </Link>
 
@@ -77,7 +77,7 @@ const Navbar = () => {
             <Link
               key={item.label}
               to={item.href}
-              className="font-display italic text-[#1C1C1A] text-2xl py-2 hover:text-[#C4956A] transition-colors duration-300"
+              className="font-body uppercase text-ink/70 text-[11px] tracking-[0.18em] py-3 hover:text-warm transition-colors duration-300"
               onClick={() => setMenuOpen(false)}
             >
               {item.label}

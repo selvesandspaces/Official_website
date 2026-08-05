@@ -11,6 +11,8 @@ import Blog from "./pages/Blog";
 import FirstVisit from "./pages/FirstVisit";
 import Workshops from "./pages/Workshops";
 import SchoolMentalHealth from "./pages/SchoolMentalHealth";
+import Assessments from "./pages/Assessments";
+import Partners from "./pages/Partners";
 
 function App() {
   return (
@@ -27,6 +29,8 @@ function App() {
         <Route path="/first-visit" element={<FirstVisit />} />
         <Route path="/workshops" element={<Workshops />} />
         <Route path="/school-mental-health" element={<SchoolMentalHealth />} />
+        <Route path="/assessments" element={<Assessments />} />
+        <Route path="/partners" element={<Partners />} />
       </Routes>
       <Footer />
     </BrowserRouter>

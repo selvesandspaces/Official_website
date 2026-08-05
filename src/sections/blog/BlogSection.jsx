@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { Link } from "react-router-dom";
 
 /* ─────────────────────────────────────────────────────────────
    BLOG DATA — add / edit posts here
@@ -182,14 +183,14 @@ function BlogModal({ post, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-stretch"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4"
       style={{ background: "rgba(28,28,26,0.82)", backdropFilter: "blur(12px)" }}
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div
-        className="relative m-auto flex w-full max-w-5xl overflow-hidden"
+        className="relative flex w-full max-w-5xl overflow-hidden"
         style={{
-          maxHeight: "90vh",
+          maxHeight: "92vh",
           background: "#EDEAE4",
           boxShadow: "0 32px 80px rgba(0,0,0,0.35)",
         }}
@@ -219,7 +220,7 @@ function BlogModal({ post, onClose }) {
         </button>
 
         {/* Left — article content */}
-        <div className="flex-1 overflow-y-auto px-10 py-12 md:px-14" style={{ maxWidth: "55%", background: "#F5F0E8" }}>
+        <div className="flex-1 overflow-y-auto px-6 py-10 md:px-14 md:py-12" style={{ background: "#F5F0E8" }}>
           {/* Meta */}
           <div className="flex items-center gap-3 mb-6">
             <span
@@ -228,7 +229,7 @@ function BlogModal({ post, onClose }) {
             >
               {post.category}
             </span>
-            <span className="font-body text-[11px]" style={{ color: "rgba(28,28,26,0.38)" }}>
+            <span className="font-body font-light text-[11px]" style={{ color: "rgba(28,28,26,0.38)" }}>
               {post.date} · {post.readTime}
             </span>
           </div>
@@ -253,16 +254,16 @@ function BlogModal({ post, onClose }) {
 
           {/* CTA */}
           <div className="mt-10 pt-8" style={{ borderTop: "1px solid rgba(28,28,26,0.08)" }}>
-            <p className="font-body text-xs mb-4" style={{ color: "rgba(28,28,26,0.38)", letterSpacing: "0.06em" }}>
+            <p className="font-body font-light text-xs mb-4" style={{ color: "rgba(28,28,26,0.38)", letterSpacing: "0.06em" }}>
               This piece resonated with you?
             </p>
-            <a
-              href="/contact"
+            <Link
+              to="/contact"
               className="font-body inline-flex items-center gap-3 text-xs uppercase tracking-[0.22em] px-6 py-3.5 transition-colors duration-300"
-              style={{ background: post.accent, color: "#F5F0E8" }}
+              style={{ background: post.accent, color: "#F5F0E8", textDecoration: "none" }}
             >
               Book a conversation →
-            </a>
+            </Link>
           </div>
         </div>
 
@@ -361,7 +362,7 @@ function BlogCard({ post, isActive, onClick, onReadMore }) {
           {post.title}
         </h3>
         <div className="flex items-center justify-between mt-3 pt-3" style={{ borderTop: "1px solid rgba(28,28,26,0.10)" }}>
-          <span className="font-body text-[10px]" style={{ color: "rgba(28,28,26,0.38)" }}>
+          <span className="font-body font-light text-[10px]" style={{ color: "rgba(28,28,26,0.38)" }}>
             {post.date} · {post.readTime}
           </span>
           <button
@@ -492,7 +493,7 @@ export default function BlogSection() {
           </div>
 
           {/* Hero split */}
-          <div className="grid gap-10 md:gap-16 items-center" style={{ gridTemplateColumns: "1fr 1fr" }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
 
             {/* Left — text */}
             <div>
@@ -527,7 +528,7 @@ export default function BlogSection() {
                 >
                   Read more →
                 </button>
-                <span className="font-body text-[10px]" style={{ color: "rgba(245,240,232,0.32)" }}>
+                <span className="font-body font-light text-[10px]" style={{ color: "rgba(245,240,232,0.32)" }}>
                   {selectedPost.date} · {selectedPost.readTime}
                 </span>
               </div>

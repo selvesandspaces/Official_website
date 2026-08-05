@@ -209,8 +209,8 @@ export default function FirstVisitSection() {
               transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             >
               <img
-                src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=900&q=80"
-                alt="Calm reflection"
+                src="ecosystem.jpeg"
+                alt="Mental health ecosystem"
                 className="w-full object-cover"
                 style={{ height: "380px" }}
               />
@@ -229,7 +229,7 @@ export default function FirstVisitSection() {
                 }}
               >
                 <p
-                  className="font-body italic text-center"
+                  className="font-body font-light italic text-center"
                   style={{ fontSize: "13px", color: "rgba(245,240,232,0.72)" }}
                 >
                   Finding stillness, one step at a time.

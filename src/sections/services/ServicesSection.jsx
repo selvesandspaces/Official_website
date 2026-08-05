@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 
 const services = [
   {
@@ -363,20 +364,21 @@ export default function ServicesSection() {
               {current.desc}
             </p>
 
-            <a
-              href="/contact"
+            <Link
+              to="/contact"
               className="inline-block font-body uppercase px-10 py-4 transition-all duration-300"
               style={{
                 fontSize: "9px",
                 letterSpacing: "0.3em",
                 background: current.accent,
                 color: "#F5F0E8",
+                textDecoration: "none",
               }}
               onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.8")}
               onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
             >
               Book {current.title} →
-            </a>
+            </Link>
           </div>
 
           {/* ── Controls ── */}
@@ -468,20 +470,21 @@ export default function ServicesSection() {
             Not sure where to start?
           </p>
 
-          <a
-            href="/contact"
+          <Link
+            to="/contact"
             className="font-body uppercase px-10 py-4 transition-all duration-300"
             style={{
               fontSize: "9px",
               letterSpacing: "0.3em",
               background: "#2C3B2D",
               color: "#F5F0E8",
+              textDecoration: "none",
             }}
             onMouseEnter={(e) => (e.currentTarget.style.background = "#8A9E85")}
             onMouseLeave={(e) => (e.currentTarget.style.background = "#2C3B2D")}
           >
             Let's Talk First →
-          </a>
+          </Link>
         </div>
       </div>
     </section>

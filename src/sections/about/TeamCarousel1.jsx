@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 const team = [
   {
     id: 1,
-    name: "Kanagalakshmi P",
+    name: "Ms. Kanagalakshmi P",
     title: "Senior Clinical Psychologist, Psychotherapist & Founder",
     tags: ["Clinical Psychologist", "Psychotherapist", "Supervisor", "Founder"],
     years: 12,
@@ -332,7 +332,7 @@ export default function TeamCarousel() {
                   {String(active + 1).padStart(2, "0")}
                 </span>
                 <span
-                  className="font-body"
+                  className="font-body font-light"
                   style={{
                     fontSize: "13px",
                     color: "rgba(28,28,26,0.3)",
@@ -364,7 +364,7 @@ export default function TeamCarousel() {
                     </h2>
                     {current.words && (
                       <p
-                        className="font-body italic mb-4"
+                        className="font-body font-light italic mb-4"
                         style={{
                           fontSize: "12px",
                           color: "#8A9E85",
@@ -378,7 +378,7 @@ export default function TeamCarousel() {
                       {current.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="font-body uppercase"
+                          className="font-body font-light uppercase"
                           style={{
                             fontSize: "9px",
                             letterSpacing: "0.2em",
@@ -540,7 +540,7 @@ export default function TeamCarousel() {
                   {String(active + 1).padStart(2, "0")}
                 </span>
                 <span
-                  className="font-body"
+                  className="font-body font-light"
                   style={{
                     fontSize: "13px",
                     color: "rgba(28,28,26,0.3)",
@@ -572,7 +572,7 @@ export default function TeamCarousel() {
                     </h2>
                     {current.words && (
                       <p
-                        className="font-body italic mb-6"
+                        className="font-body font-light italic mb-6"
                         style={{
                           fontSize: "12px",
                           color: "#8A9E85",
@@ -587,7 +587,7 @@ export default function TeamCarousel() {
                       {current.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="font-body uppercase"
+                          className="font-body font-light uppercase"
                           style={{
                             fontSize: "9px",
                             letterSpacing: "0.2em",
@@ -602,7 +602,7 @@ export default function TeamCarousel() {
                     </div>
 
                     <p
-                      className="leading-relaxed mb-12"
+                      className="font-body font-light leading-relaxed mb-12"
                       style={{
                         fontSize: "17px",
                         color: "rgba(28,28,26,0.6)",
@@ -811,7 +811,7 @@ export default function TeamCarousel() {
               ))}
 
               <button
-                className="font-body uppercase transition-colors duration-300"
+                className="font-body font-light uppercase transition-colors duration-300"
                 style={{
                   fontSize: "10px",
                   letterSpacing: "0.25em",
@@ -828,58 +828,6 @@ export default function TeamCarousel() {
               >
                 Book a Session →
               </button>
-
-              {current.years && (
-                <div
-                  className="flex gap-10 md:gap-16 pt-10 mt-10"
-                  style={{ borderTop: "1px solid rgba(28,28,26,0.1)" }}
-                >
-                  <div>
-                    <div
-                      className="font-display"
-                      style={{
-                        fontSize: "clamp(2rem, 5vw, 3.5rem)",
-                        color: "#1C1C1A",
-                        lineHeight: 1,
-                      }}
-                    >
-                      {current.years}
-                    </div>
-                    <div
-                      className="font-body uppercase mt-2"
-                      style={{
-                        fontSize: "9px",
-                        letterSpacing: "0.2em",
-                        color: "rgba(28,28,26,0.4)",
-                      }}
-                    >
-                      Years in practice
-                    </div>
-                  </div>
-                  <div>
-                    <div
-                      className="font-display"
-                      style={{
-                        fontSize: "clamp(2rem, 5vw, 3.5rem)",
-                        color: "#1C1C1A",
-                        lineHeight: 1,
-                      }}
-                    >
-                      {current.rating}
-                    </div>
-                    <div
-                      className="font-body uppercase mt-2"
-                      style={{
-                        fontSize: "9px",
-                        letterSpacing: "0.2em",
-                        color: "rgba(28,28,26,0.4)",
-                      }}
-                    >
-                      Average rating
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </motion.div>

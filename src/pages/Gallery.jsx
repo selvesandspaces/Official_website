@@ -155,7 +155,7 @@ export default function HomeGallery() {
 
           {/* Category count */}
           <p
-            className="font-body mt-5"
+            className="font-body font-light mt-5"
             style={{ fontSize: "12px", color: "rgba(245,237,224,0.28)", letterSpacing: "0.08em" }}
           >
             {category.images.length} {category.images.length === 1 ? "image" : "images"}

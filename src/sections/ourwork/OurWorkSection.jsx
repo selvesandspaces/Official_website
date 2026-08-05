@@ -174,8 +174,8 @@ export default function OurWorkSection() {
               )}
             </div>
             <div className="relative z-10 mt-6">
-              <p className="font-body mb-1" style={{ fontSize: "10px", color: "rgba(28,28,26,0.30)" }}>+91 96771 75894</p>
-              <p className="font-body" style={{ fontSize: "10px", color: "rgba(28,28,26,0.30)" }}>selvesandspaces@gmail.com</p>
+              <p className="font-body font-light mb-1" style={{ fontSize: "10px", color: "rgba(28,28,26,0.30)" }}>+91 96771 75894</p>
+              <p className="font-body font-light" style={{ fontSize: "10px", color: "rgba(28,28,26,0.30)" }}>selvesandspaces@gmail.com</p>
             </div>
           </motion.div>
 
@@ -311,8 +311,8 @@ export default function OurWorkSection() {
               )}
             </div>
             <div className="relative z-10">
-              <p className="font-body mb-1" style={{ fontSize: "10px", color: "rgba(28,28,26,0.30)" }}>+91 96771 75894</p>
-              <p className="font-body" style={{ fontSize: "10px", color: "rgba(28,28,26,0.30)" }}>selvesandspaces@gmail.com</p>
+              <p className="font-body font-light mb-1" style={{ fontSize: "10px", color: "rgba(28,28,26,0.30)" }}>+91 96771 75894</p>
+              <p className="font-body font-light" style={{ fontSize: "10px", color: "rgba(28,28,26,0.30)" }}>selvesandspaces@gmail.com</p>
             </div>
           </motion.div>
 
@@ -364,7 +364,7 @@ export default function OurWorkSection() {
               <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.20)" }} />
               <div className="absolute top-5 left-6 right-6">
                 <span className="font-body tracking-[0.07em]" style={{ color: "#F5F0E8", fontSize: "14px" }}>Mental Health Forum</span>
-                <p className="font-body mt-1" style={{ fontSize: "10px", color: "rgba(245,240,232,0.50)", letterSpacing: "0.12em" }}>For Women Leaders</p>
+                <p className="font-body font-light mt-1" style={{ fontSize: "10px", color: "rgba(245,240,232,0.50)", letterSpacing: "0.12em" }}>For Women Leaders</p>
               </div>
               <div className="absolute bottom-5 left-6">
                 <p className="font-display italic" style={{ fontSize: "1.2rem", color: "rgba(245,240,232,0.38)" }}>Coming soon</p>
@@ -462,7 +462,7 @@ export default function OurWorkSection() {
 
               <div className="flex items-center gap-4 shrink-0">
                 <span
-                  className="font-body hidden md:block"
+                  className="font-body font-light hidden md:block"
                   style={{ fontSize: "11px", color: "rgba(28,28,26,0.35)", letterSpacing: "0.06em" }}
                 >
                   {faqs.length} questions
