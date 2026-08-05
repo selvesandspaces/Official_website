@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 const Hero = () => {
   return (
@@ -38,10 +39,14 @@ const Hero = () => {
           </motion.h1>
 
           <motion.h3
-            className="font-cursive text-[#F5F0E8] text-2xl md:text-3xl leading-[1.3] mb-4 md:mb-6"
+            className="font-display italic text-cream text-2xl md:text-3xl leading-[1.3] mb-4 md:mb-6"
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.38, ease: [0.22, 1, 0.36, 1] }}
+            transition={{
+              duration: 0.8,
+              delay: 0.38,
+              ease: [0.22, 1, 0.36, 1],
+            }}
           >
             Towards Integrated Wellness.
           </motion.h3>
@@ -50,11 +55,18 @@ const Hero = () => {
             className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.56, ease: [0.22, 1, 0.36, 1] }}
+            transition={{
+              duration: 0.7,
+              delay: 0.56,
+              ease: [0.22, 1, 0.36, 1],
+            }}
           >
-            <button className="font-body text-xs tracking-[0.2em] uppercase bg-[#2C3B2D] text-[#F5F0E8] px-8 py-4 hover:bg-[#C4956A] transition-colors duration-300">
+            <Link
+              to="/what we offer"
+              className="font-body text-xs tracking-[0.2em] uppercase bg-green-deep text-cream px-8 py-4 hover:bg-warm transition-colors duration-300"
+            >
               Begin Your Journey
-            </button>
+            </Link>
             <a
               href="#AboutUs"
               className="font-body text-xs tracking-[0.2em] uppercase text-[#F5F0E8]/70 hover:text-[#F5F0E8] transition-colors duration-300 underline underline-offset-4"
