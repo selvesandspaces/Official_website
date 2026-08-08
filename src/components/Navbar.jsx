@@ -5,7 +5,6 @@ const navLinks = [
   { label: "Who We Are", href: "/our team" },
   { label: "What We Do", href: "/what we offer" },
   { label: "Mental Health Ecosystem", href: "/school-mental-health" },
-  { label: "Partners", href: "/partners" },
   { label: "Assessments", href: "/assessments" },
   { label: "Resources", href: "/our work" },
   { label: "Gallery", href: "/gallery" },
@@ -23,7 +22,17 @@ const Navbar = () => {
           className="font-body text-[#1C1C1A] text-sm tracking-[0.2em] uppercase shrink-0"
         >
           Selves{" "}
-          <span style={{ fontFamily: "'EB Garamond', serif", fontSize: "1.5em", lineHeight: 1, letterSpacing: 0, fontWeight: 400 }}>&</span>{" "}
+          <span
+            style={{
+              fontFamily: "'EB Garamond', serif",
+              fontSize: "1.5em",
+              lineHeight: 1,
+              letterSpacing: 0,
+              fontWeight: 400,
+            }}
+          >
+            &
+          </span>{" "}
           Spaces
         </Link>
 

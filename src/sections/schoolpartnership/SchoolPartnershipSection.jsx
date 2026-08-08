@@ -147,7 +147,7 @@ export default function SchoolPartnershipSection() {
       >
         {/* Background image */}
         <img
-          src="ProjectAindri.png"
+          src="plain_project_aindiri.jpeg"
           alt="Project Aindri"
           className="school-hero-img"
           style={{
@@ -225,13 +225,23 @@ export default function SchoolPartnershipSection() {
         >
           <span
             className="font-body uppercase"
-            style={{ fontSize: "0.72rem", letterSpacing: "0.38em", color: "#C4956A" }}
+            style={{
+              fontSize: "0.72rem",
+              letterSpacing: "0.38em",
+              color: "#C4956A",
+            }}
           >
             Scroll to learn more
           </span>
           <motion.svg
-            width="30" height="30" viewBox="0 0 24 24" fill="none"
-            stroke="#C4956A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+            width="30"
+            height="30"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#C4956A"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
             animate={{ y: [0, 6, 0] }}
             transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
           >
