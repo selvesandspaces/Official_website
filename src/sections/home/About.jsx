@@ -84,9 +84,14 @@ const HomeAbout = () => {
             <p className="font-body text-[#8A9E85] text-[10px] tracking-[0.2em] uppercase mb-2 group-hover:text-[#C4956A] transition-colors duration-300">
               Find Us
             </p>
-            <p className="font-display italic text-[#1C1C1A] text-xl leading-snug">
+            <a
+              href="https://www.google.com/maps/place/Selves%26Spaces+by+Kanaga+Lakshmi/@13.0064984,80.2476236,17z/data=!3m1!4b1!4m6!3m5!1s0x3a52676420d6677d:0x9b395fdb3e96ab34!8m2!3d13.0064932!4d80.2501985!16s%2Fg%2F11w312v3p1?entry=ttu&g_ep=EgoyMDI2MDgwNS4xIKXMDSoASAFQAw%3D%3D"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-display italic text-ink text-xl leading-snug group-hover:text-warm transition-colors duration-300 block"
+            >
               Adyar, Chennai
-            </p>
+            </a>
             <p className="font-body font-light text-[#1C1C1A]/60 text-sm mt-1">
               Tamil Nadu, India
             </p>

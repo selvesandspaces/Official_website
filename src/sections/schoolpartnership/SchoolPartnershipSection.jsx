@@ -1289,7 +1289,7 @@ export default function SchoolPartnershipSection() {
               }}
             >
               <a
-                href="mailto:hello@selvesandspaces.com"
+                href="mailto:selvesandspaces@gmail.com"
                 className="font-body font-light"
                 style={{
                   fontSize: "0.93rem",
@@ -1310,7 +1310,7 @@ export default function SchoolPartnershipSection() {
                     "rgba(245,240,232,0.25)";
                 }}
               >
-                hello@selvesandspaces.com
+                selvesandspaces@gmail.com
               </a>
               <span
                 className="font-body font-light"

@@ -3,20 +3,20 @@ import { motion } from "framer-motion";
 
 function ScriptDivider({ text, light = false }) {
   return (
-    <div className="flex items-center gap-8 py-3">
+    <div className="flex items-center gap-4 md:gap-8 py-3">
       <div
-        className="flex-1"
+        className="flex-1 hidden md:block"
         style={{
           height: "1px",
           background: light ? "rgba(245,240,232,0.18)" : "rgba(28,28,26,0.14)",
         }}
       />
       <span
-        className="shrink-0 px-3 text-center leading-snug"
+        className="min-w-0 px-3 text-center leading-snug"
         style={{
           fontFamily: "'Cormorant Garamond', serif",
           fontStyle: "italic",
-          fontSize: "clamp(2rem, 3vw, 3.2rem)",
+          fontSize: "clamp(1.6rem, 4vw, 3.2rem)",
           color: light ? "#F5F0E8" : "#1C1C1A",
           letterSpacing: "0.01em",
         }}
@@ -24,7 +24,7 @@ function ScriptDivider({ text, light = false }) {
         {text}
       </span>
       <div
-        className="flex-1"
+        className="flex-1 hidden md:block"
         style={{
           height: "1px",
           background: light ? "rgba(245,240,232,0.18)" : "rgba(28,28,26,0.14)",
@@ -62,7 +62,7 @@ const policyVariants = {
 export default function FirstVisitSection() {
   return (
     <main
-      className="font-body"
+      className="font-body overflow-x-hidden"
       style={{ background: "#F5F0E8", color: "#1C1C1A" }}
     >
       {/* ══ HERO ══ */}
