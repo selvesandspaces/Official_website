@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { useDialog } from "../../hooks/useDialog";
 import { motion, AnimatePresence } from "framer-motion";
 
 const UPCOMING = [
@@ -76,8 +78,27 @@ const cardVariants = {
   }),
 };
 
+// Registration falls back to the contact page until a real Google Form is set.
+function RegisterLink({ href, children, ...rest }) {
+  return href.startsWith("/") ? (
+    <Link to={href} {...rest}>{children}</Link>
+  ) : (
+    <a href={href} target="_blank" rel="noopener noreferrer" {...rest}>{children}</a>
+  );
+}
+
 function WorkshopModal({ workshop, onClose }) {
+  const dialogRef = useRef(null);
+  useDialog(dialogRef, { active: Boolean(workshop), onEscape: onClose });
+  useEffect(() => {
+    if (!workshop) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, [workshop]);
   if (!workshop) return null;
+  const hasForm = workshop.formLink && workshop.formLink !== "#";
+  const hasLearn = workshop.learnLink && workshop.learnLink !== "#";
   return (
     <AnimatePresence>
       <motion.div
@@ -90,6 +111,11 @@ function WorkshopModal({ workshop, onClose }) {
         transition={{ duration: 0.25 }}
       >
         <motion.div
+          ref={dialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label={workshop.title}
+          tabIndex={-1}
           className="relative w-full overflow-hidden"
           style={{ maxWidth: "480px", background: "#F5F0E8", boxShadow: "0 32px 80px rgba(0,0,0,0.28)" }}
           onClick={(e) => e.stopPropagation()}
@@ -124,15 +150,16 @@ function WorkshopModal({ workshop, onClose }) {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3">
-              <a
-                href={workshop.formLink}
+              <RegisterLink
+                href={hasForm ? workshop.formLink : "/contact"}
                 className="font-body uppercase text-center transition-opacity duration-200"
                 style={{ flex: 1, fontSize: "10px", letterSpacing: "0.24em", padding: "13px 16px", background: workshop.accent, color: "#F5F0E8", textDecoration: "none" }}
                 onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.82")}
                 onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
               >
-                Register on Google Forms →
-              </a>
+                {hasForm ? "Register on Google Forms →" : "Register interest →"}
+              </RegisterLink>
+              {hasLearn && (
               <a
                 href={workshop.learnLink}
                 className="font-body uppercase text-center transition-all duration-200"
@@ -142,6 +169,7 @@ function WorkshopModal({ workshop, onClose }) {
               >
                 Learn More →
               </a>
+              )}
             </div>
           </div>
         </motion.div>
@@ -163,7 +191,7 @@ function WorkshopCard({ workshop, onLearnMore, index }) {
     >
       {/* Image */}
       <div className="overflow-hidden" style={{ height: "220px" }}>
-        <img
+        <img loading="lazy" decoding="async"
           src={workshop.image}
           alt={workshop.title}
           className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"

@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { submitContact } from "../../services/api";
+import { CONTACT, whatsappUrl } from "../../lib/contact";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 28 },
@@ -23,19 +25,82 @@ const ContactSection = () => {
     message: "",
   });
   const [focused, setFocused] = useState(null);
+  const [errors, setErrors] = useState({});
+  const [status, setStatus] = useState("idle"); // idle | sending | sent | error
 
-  const handleChange = (e) =>
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: undefined }));
+  };
 
-  const handleSendMessage = () => {
+  const validate = () => {
+    const next = {};
+    if (!formData.firstName.trim()) next.firstName = "Please enter your first name.";
+    if (!/^\S+@\S+\.\S+$/.test(formData.email.trim())) next.email = "Please enter a valid email address.";
+    if (formData.message.trim().length < 10) next.message = "Please tell us a little about what brings you here.";
+    return next;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (status === "sending") return;
+    const next = validate();
+    setErrors(next);
+    if (Object.keys(next).length) return;
+    setStatus("sending");
+    try {
+      await submitContact({
+        firstName: formData.firstName.trim(),
+        lastName: formData.lastName.trim(),
+        email: formData.email.trim(),
+        message: formData.message.trim(),
+      });
+      setStatus("sent");
+      setFormData({ firstName: "", lastName: "", email: "", message: "" });
+    } catch {
+      setStatus("error");
+    }
+  };
+
+  const handleWhatsApp = () => {
     const { firstName, lastName, email, message } = formData;
     const text = [
       `Hi, I'm ${[firstName, lastName].filter(Boolean).join(" ") || "reaching out"}.`,
       email ? `Email: ${email}` : "",
       message ? `\n${message}` : "",
     ].filter(Boolean).join("\n");
-    window.open(`https://wa.me/919677175894?text=${encodeURIComponent(text)}`, "_blank", "noopener,noreferrer");
+    window.open(whatsappUrl(text), "_blank", "noopener,noreferrer");
   };
+
+  const fieldStyle = (name) => ({
+    fontSize: "13.5px",
+    color: "#1C1C1A",
+    background: focused === name ? "#fff" : "#F0EBF6",
+    border: `1px solid ${errors[name] ? "#B4483C" : focused === name ? "rgba(107,86,168,0.45)" : "transparent"}`,
+    borderRadius: "12px",
+    padding: "13px 16px",
+    boxShadow: focused === name ? "0 0 0 3px rgba(107,86,168,0.12)" : "none",
+  });
+
+  const fieldProps = (name) => ({
+    name,
+    id: `contact-${name}`,
+    value: formData[name],
+    onChange: handleChange,
+    onFocus: () => setFocused(name),
+    onBlur: () => setFocused(null),
+    "aria-invalid": errors[name] ? "true" : undefined,
+    "aria-describedby": errors[name] ? `contact-${name}-error` : undefined,
+    style: fieldStyle(name),
+  });
+
+  const fieldError = (name) =>
+    errors[name] ? (
+      <p id={`contact-${name}-error`} role="alert" className="font-body mt-1.5 px-1" style={{ fontSize: "12px", color: "#B4483C" }}>
+        {errors[name]}
+      </p>
+    ) : null;
 
   return (
     <section
@@ -287,87 +352,58 @@ const ContactSection = () => {
                 Reach out to us
               </h3>
 
-              <form className="flex flex-col gap-3">
-                <div className="grid grid-cols-2 gap-3">
-                  {["firstName", "lastName"].map((field) => (
+              <form className="flex flex-col gap-3" onSubmit={handleSubmit} noValidate>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label htmlFor="contact-firstName" className="sr-only">First name</label>
                     <input
-                      key={field}
                       type="text"
-                      name={field}
-                      placeholder={
-                        field === "firstName" ? "First name" : "Last name"
-                      }
-                      value={formData[field]}
-                      onChange={handleChange}
-                      onFocus={() => setFocused(field)}
-                      onBlur={() => setFocused(null)}
+                      autoComplete="given-name"
+                      placeholder="First name"
                       className="font-body font-light w-full outline-none transition-all duration-200"
-                      style={{
-                        fontSize: "13.5px",
-                        color: "#1C1C1A",
-                        background: focused === field ? "#fff" : "#F0EBF6",
-                        border: `1px solid ${focused === field ? "rgba(107,86,168,0.45)" : "transparent"}`,
-                        borderRadius: "12px",
-                        padding: "13px 16px",
-                        boxShadow:
-                          focused === field
-                            ? "0 0 0 3px rgba(107,86,168,0.08)"
-                            : "none",
-                      }}
+                      {...fieldProps("firstName")}
                     />
-                  ))}
+                    {fieldError("firstName")}
+                  </div>
+                  <div>
+                    <label htmlFor="contact-lastName" className="sr-only">Last name</label>
+                    <input
+                      type="text"
+                      autoComplete="family-name"
+                      placeholder="Last name"
+                      className="font-body font-light w-full outline-none transition-all duration-200"
+                      {...fieldProps("lastName")}
+                    />
+                  </div>
                 </div>
 
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Email address"
-                  value={formData.email}
-                  onChange={handleChange}
-                  onFocus={() => setFocused("email")}
-                  onBlur={() => setFocused(null)}
-                  className="font-body font-light w-full outline-none transition-all duration-200"
-                  style={{
-                    fontSize: "13.5px",
-                    color: "#1C1C1A",
-                    background: focused === "email" ? "#fff" : "#F0EBF6",
-                    border: `1px solid ${focused === "email" ? "rgba(107,86,168,0.45)" : "transparent"}`,
-                    borderRadius: "12px",
-                    padding: "13px 16px",
-                    boxShadow:
-                      focused === "email"
-                        ? "0 0 0 3px rgba(107,86,168,0.08)"
-                        : "none",
-                  }}
-                />
+                <div>
+                  <label htmlFor="contact-email" className="sr-only">Email address</label>
+                  <input
+                    type="email"
+                    autoComplete="email"
+                    placeholder="Email address"
+                    className="font-body font-light w-full outline-none transition-all duration-200"
+                    {...fieldProps("email")}
+                  />
+                  {fieldError("email")}
+                </div>
 
-                <textarea
-                  name="message"
-                  placeholder="Briefly tell us what brings you here"
-                  rows={4}
-                  value={formData.message}
-                  onChange={handleChange}
-                  onFocus={() => setFocused("message")}
-                  onBlur={() => setFocused(null)}
-                  className="font-body font-light w-full outline-none resize-none transition-all duration-200"
-                  style={{
-                    fontSize: "13.5px",
-                    color: "#1C1C1A",
-                    background: focused === "message" ? "#fff" : "#F0EBF6",
-                    border: `1px solid ${focused === "message" ? "rgba(107,86,168,0.45)" : "transparent"}`,
-                    borderRadius: "12px",
-                    padding: "13px 16px",
-                    boxShadow:
-                      focused === "message"
-                        ? "0 0 0 3px rgba(107,86,168,0.08)"
-                        : "none",
-                  }}
-                />
+                <div>
+                  <label htmlFor="contact-message" className="sr-only">What brings you here</label>
+                  <textarea
+                    rows={4}
+                    placeholder="Briefly tell us what brings you here"
+                    className="font-body font-light w-full outline-none resize-none transition-all duration-200"
+                    {...fieldProps("message")}
+                  />
+                  {fieldError("message")}
+                </div>
 
                 <button
-                  type="button"
-                  onClick={handleSendMessage}
-                  className="font-body uppercase w-full transition-all duration-300"
+                  type="submit"
+                  disabled={status === "sending"}
+                  className="font-body uppercase w-full transition-all duration-300 disabled:opacity-60"
                   style={{
                     fontSize: "10px",
                     letterSpacing: "0.22em",
@@ -377,14 +413,38 @@ const ContactSection = () => {
                     padding: "15px 24px",
                     marginTop: "4px",
                   }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.background = "#8A72C4")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.background = "#6B56A8")
-                  }
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "#8A72C4")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "#6B56A8")}
                 >
-                  Send Message
+                  {status === "sending" ? "Sending…" : "Send Message"}
+                </button>
+
+                <div aria-live="polite">
+                  {status === "sent" && (
+                    <p className="font-body px-1" style={{ fontSize: "13px", color: "#2C3B2D" }}>
+                      Thank you — your message has been received. Our team will reach out to schedule your first session.
+                    </p>
+                  )}
+                  {status === "error" && (
+                    <p className="font-body px-1" style={{ fontSize: "13px", color: "#B4483C" }}>
+                      We couldn&rsquo;t send your message just now. Please try again, or reach us on WhatsApp or at {CONTACT.phoneDisplay}.
+                    </p>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleWhatsApp}
+                  className="font-body w-full transition-colors duration-300"
+                  style={{
+                    fontSize: "12px",
+                    color: "#6B56A8",
+                    border: "1px solid rgba(107,86,168,0.28)",
+                    borderRadius: "12px",
+                    padding: "13px 24px",
+                  }}
+                >
+                  Prefer WhatsApp? Message us there instead
                 </button>
               </form>
             </motion.div>
@@ -408,16 +468,16 @@ const ContactSection = () => {
                 {[
                   {
                     label: "Instagram",
+                    href: "https://www.instagram.com/selvesandspaces/",
                     path: "M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z",
-                  },
-                  {
-                    label: "LinkedIn",
-                    path: "M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z",
                   },
                 ].map((s) => (
                   <a
                     key={s.label}
-                    href="#"
+                    href={s.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={s.label}
                     className="flex items-center justify-center transition-all duration-300"
                     style={{
                       width: "32px",

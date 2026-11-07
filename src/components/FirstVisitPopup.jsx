@@ -1,19 +1,46 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDialog } from "../hooks/useDialog";
+
+const SEEN_KEY = "ss_first_visit_prompt_seen";
+
+const hasSeenPrompt = () => {
+  try {
+    return localStorage.getItem(SEEN_KEY) === "1";
+  } catch {
+    return false;
+  }
+};
+
+const markPromptSeen = () => {
+  try {
+    localStorage.setItem(SEEN_KEY, "1");
+  } catch {
+    // storage unavailable (private mode) — the prompt may show again, which is acceptable
+  }
+};
 
 export default function FirstVisitPopup() {
   const [visible, setVisible] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (hasSeenPrompt()) return;
     // Small delay so the page renders first
     const t = setTimeout(() => setVisible(true), 600);
     return () => clearTimeout(t);
   }, []);
 
-  const dismiss = () => setVisible(false);
+  const dismiss = () => {
+    markPromptSeen();
+    setVisible(false);
+  };
+
+  const dialogRef = useRef(null);
+  useDialog(dialogRef, { active: visible, onEscape: dismiss });
 
   const handleYes = () => {
+    markPromptSeen();
     setVisible(false);
     navigate("/first-visit");
   };
@@ -26,6 +53,11 @@ export default function FirstVisitPopup() {
       style={{ background: "rgba(28,28,26,0.60)", backdropFilter: "blur(8px)" }}
     >
       <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="First visit"
+        tabIndex={-1}
         className="relative mx-4 flex flex-col items-center text-center overflow-hidden"
         style={{
           background: "#F5F0E8",

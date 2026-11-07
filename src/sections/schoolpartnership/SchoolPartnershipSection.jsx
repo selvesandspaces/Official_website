@@ -146,7 +146,7 @@ export default function SchoolPartnershipSection() {
         style={{ position: "relative", height: "100vh", overflow: "hidden" }}
       >
         {/* Background image */}
-        <img
+        <img loading="lazy" decoding="async"
           src="plain_project_aindiri.jpeg"
           alt="Project Aindri"
           className="school-hero-img"

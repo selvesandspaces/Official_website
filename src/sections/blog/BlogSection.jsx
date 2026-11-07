@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
+import { useDialog } from "../../hooks/useDialog";
 
 /* ─────────────────────────────────────────────────────────────
    BLOG DATA — add / edit posts here
@@ -171,6 +172,8 @@ const CATEGORIES = ["All", "Relationships", "Self-care", "Grief", "Body & Mind",
    MODAL COMPONENT
 ───────────────────────────────────────────────────────────── */
 function BlogModal({ post, onClose }) {
+  const dialogRef = useRef(null);
+  useDialog(dialogRef);
   useEffect(() => {
     document.body.style.overflow = "hidden";
     const onKey = (e) => e.key === "Escape" && onClose();
@@ -183,6 +186,11 @@ function BlogModal({ post, onClose }) {
 
   return (
     <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label={post.title}
+      tabIndex={-1}
       className="fixed inset-0 z-[100] flex items-center justify-center p-4"
       style={{ background: "rgba(28,28,26,0.82)", backdropFilter: "blur(12px)" }}
       onClick={(e) => e.target === e.currentTarget && onClose()}
@@ -269,7 +277,7 @@ function BlogModal({ post, onClose }) {
 
         {/* Right — image */}
         <div className="hidden md:block relative" style={{ width: "45%", minHeight: "500px" }}>
-          <img
+          <img loading="lazy" decoding="async"
             src={post.image}
             alt={post.title}
             className="absolute inset-0 w-full h-full object-cover"
@@ -334,7 +342,7 @@ function BlogCard({ post, isActive, onClick, onReadMore }) {
     >
       {/* Image */}
       <div className="relative overflow-hidden" style={{ height: "160px" }}>
-        <img
+        <img loading="lazy" decoding="async"
           src={post.image}
           alt={post.title}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
@@ -545,7 +553,7 @@ export default function BlogSection() {
               </span>
 
               <div className="relative overflow-hidden" style={{ borderRadius: "2px" }}>
-                <img
+                <img loading="lazy" decoding="async"
                   key={selectedPost.id}
                   src={selectedPost.image}
                   alt={selectedPost.title}

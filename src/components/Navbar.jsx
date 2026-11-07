@@ -1,17 +1,20 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 const navLinks = [
-  { label: "Who We Are", href: "/our team" },
-  { label: "What We Do", href: "/what we offer" },
-  { label: "Mental Health Ecosystem", href: "/school-mental-health" },
+  { label: "Who We Are", href: "/our-team" },
+  { label: "What We Do", href: "/what-we-offer" },
+  { label: "For Schools", href: "/school-mental-health" },
   { label: "Assessments", href: "/assessments" },
-  { label: "Resources", href: "/our work" },
+  { label: "Resources", href: "/our-work" },
   { label: "Gallery", href: "/gallery" },
+  { label: "Shop", href: "/shop" },
 ];
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { configured, session } = useAuth();
 
   return (
     <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-7xl">
@@ -51,6 +54,13 @@ const Navbar = () => {
 
         {/* CTA + hamburger */}
         <div className="flex items-center gap-4">
+          {configured &&
+            <Link
+              to={session ? "/orders" : "/login"}
+              className="hidden md:block font-body text-[#1C1C1A]/60 text-[10px] tracking-[0.1em] uppercase hover:text-[#1C1C1A] transition-colors duration-300 whitespace-nowrap"
+            >
+              {session ? "My Orders" : "Sign in"}
+            </Link>}
           <Link
             to="/contact"
             className="hidden md:block font-body text-[9px] tracking-[0.12em] uppercase bg-[#2C3B2D] text-[#F5F0E8] px-4 py-2.5 hover:bg-[#C4956A] transition-colors duration-300 whitespace-nowrap"
@@ -92,6 +102,14 @@ const Navbar = () => {
               {item.label}
             </Link>
           ))}
+          {configured &&
+            <Link
+              to={session ? "/orders" : "/login"}
+              className="font-body uppercase text-ink/70 text-[11px] tracking-[0.18em] py-3 hover:text-warm transition-colors duration-300"
+              onClick={() => setMenuOpen(false)}
+            >
+              {session ? "My Orders" : "Sign in"}
+            </Link>}
           <Link
             to="/contact"
             className="mt-3 mb-4 font-body text-xs tracking-[0.2em] uppercase bg-[#2C3B2D] text-[#F5F0E8] px-6 py-3"

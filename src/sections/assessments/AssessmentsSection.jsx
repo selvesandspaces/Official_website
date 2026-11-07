@@ -363,7 +363,7 @@ export default function AssessmentsSection() {
                 Book a Consultation
               </Link>
               <Link
-                to="/what we offer"
+                to="/what-we-offer"
                 className="font-body uppercase transition-colors duration-300"
                 style={{
                   fontSize: "10px",
