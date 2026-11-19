@@ -7,7 +7,8 @@ const Hero = () => {
       {/* Background image */}
       <div className="absolute inset-0">
         <img
-          src="Hero.jpeg"
+          src="/Hero.jpeg"
+          fetchPriority="high"
           alt="sanctuary space"
           className="w-full h-full object-cover"
         />
@@ -23,7 +24,7 @@ const Hero = () => {
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
             <img
-              src="logo.jpeg"
+              src="/logo.jpeg"
               alt="selves and space logo"
               className="w-50 h-50 rounded-full mb-5"
             />
@@ -62,17 +63,17 @@ const Hero = () => {
             }}
           >
             <Link
-              to="/what we offer"
+              to="/contact"
               className="font-body text-xs tracking-[0.2em] uppercase bg-green-deep text-cream px-8 py-4 hover:bg-warm transition-colors duration-300"
             >
-              Begin Your Journey
+              Book a Session
             </Link>
-            <a
-              href="#AboutUs"
+            <Link
+              to="/first-visit"
               className="font-body text-xs tracking-[0.2em] uppercase text-[#F5F0E8]/70 hover:text-[#F5F0E8] transition-colors duration-300 underline underline-offset-4"
             >
-              About Us
-            </a>
+              What to expect on your first visit
+            </Link>
           </motion.div>
         </div>
 

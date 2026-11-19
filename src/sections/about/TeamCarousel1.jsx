@@ -8,7 +8,6 @@ const team = [
     title: "Senior Clinical Psychologist, Psychotherapist & Founder",
     tags: ["Clinical Psychologist", "Psychotherapist", "Supervisor", "Founder"],
     years: 12,
-    rating: "4.9",
     bio: "I'm Ms. Kanaga Lakshmi, a Clinical Psychologist and Psychotherapist, with years of experience helping children, adolescents, and families navigate their emotional challenges.",
     fullContent: [
       "I'm Ms. Kanaga Lakshmi, a Clinical Psychologist and Psychotherapist, with years of experience helping children, adolescents, and families navigate their emotional challenges.",
@@ -287,7 +286,7 @@ export default function TeamCarousel() {
               style={{ height: "400px", overflow: "hidden" }}
             >
               <AnimatePresence mode="wait">
-                <motion.img
+                <motion.img loading="lazy" decoding="async"
                   key={active}
                   src={current.img}
                   alt={current.name}
@@ -493,7 +492,7 @@ export default function TeamCarousel() {
                 onClick={() => setExpanded(true)}
               >
                 <AnimatePresence mode="wait">
-                  <motion.img
+                  <motion.img loading="lazy" decoding="async"
                     key={active}
                     src={current.img}
                     alt={current.name}
@@ -769,7 +768,7 @@ export default function TeamCarousel() {
                   flexShrink: 0,
                 }}
               >
-                <img
+                <img loading="lazy" decoding="async"
                   src={current.img}
                   alt={current.name}
                   className="w-full h-full object-cover object-top"
@@ -787,7 +786,7 @@ export default function TeamCarousel() {
                 className="md:hidden mb-8 overflow-hidden"
                 style={{ height: "280px" }}
               >
-                <img
+                <img loading="lazy" decoding="async"
                   src={current.img}
                   alt={current.name}
                   className="w-full h-full object-cover object-center"

@@ -182,7 +182,7 @@ export default function HomeGallery() {
                   display: "block",
                 }}
               >
-                <img
+                <img loading="lazy" decoding="async"
                   src={img.src}
                   alt={img.alt}
                   className="w-full block transition-transform duration-700 group-hover:scale-105"

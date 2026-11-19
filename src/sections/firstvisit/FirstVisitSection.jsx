@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
 function ScriptDivider({ text, light = false }) {
@@ -70,7 +69,7 @@ export default function FirstVisitSection() {
         className="relative overflow-hidden flex items-center justify-center"
         style={{ minHeight: "100vh" }}
       >
-        <img
+        <img loading="lazy" decoding="async"
           src="https://images.unsplash.com/photo-1448375240586-882707db888b?w=1400&q=80"
           alt="Forest path"
           className="absolute inset-0 w-full h-full object-cover"
@@ -208,7 +207,7 @@ export default function FirstVisitSection() {
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             >
-              <img
+              <img loading="lazy" decoding="async"
                 src="ecosystem.jpeg"
                 alt="Mental health ecosystem"
                 className="w-full object-cover"
@@ -387,7 +386,7 @@ export default function FirstVisitSection() {
                   flexShrink: 0,
                 }}
               >
-                <img
+                <img loading="lazy" decoding="async"
                   src="butterfly.jpeg"
                   alt="Butterfly"
                   className="w-full h-full object-contain object-center"

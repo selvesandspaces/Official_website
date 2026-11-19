@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+
+const MotionLink = motion.create(Link);
 
 const services = [
   {
@@ -50,7 +52,7 @@ const services = [
     id: 7,
     title: "Corporate Training",
     tagline: "Wellbeing in the workplace.",
-    href: "/our work",
+    href: "/our-work",
     desc: "This training aims to equip you with essential knowledge and strategies to promote mental well-being in the workplace. By understanding and supporting mental health, we can create a more productive, compassionate, and resilient work environment. This training content is designed to be informative, practical, and supportive in promoting mental health awareness and well-being within corporate settings. Adjusted and customised to fit the specific needs and culture of your organisation.",
     accent: "#E8B88A",
   },
@@ -157,8 +159,8 @@ function ServiceModal({ service, onClose }) {
             >
               {service.desc}
             </p>
-            <a
-              href="/contact"
+            <Link
+              to="/contact"
               className="font-body uppercase inline-block text-center transition-opacity duration-200"
               style={{
                 fontSize: "10px",
@@ -172,7 +174,7 @@ function ServiceModal({ service, onClose }) {
               onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
             >
               Book a Session →
-            </a>
+            </Link>
           </div>
         </motion.div>
       </motion.div>
@@ -347,8 +349,8 @@ export default function ServicesSection() {
                 </span>
               </h2>
             </motion.div>
-            <motion.a
-              href="/contact"
+            <MotionLink
+              to="/contact"
               className="font-body inline-flex w-fit items-center gap-3 border border-ink/15 bg-green-deep px-6 py-4 text-[10px] uppercase tracking-[0.24em] text-cream transition-colors duration-300 hover:bg-warm hover:text-ink"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
@@ -359,7 +361,7 @@ export default function ServicesSection() {
                 →
               </span>
               Start here
-            </motion.a>
+            </MotionLink>
           </div>
 
           {/* Cards */}

@@ -22,7 +22,7 @@ const HomeAbout = () => {
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         >
-          <img
+          <img loading="lazy" decoding="async"
             src="AboutUs.jpeg"
             alt="therapy space"
             className="absolute inset-0 w-full h-full object-cover opacity-80"
@@ -101,7 +101,7 @@ const HomeAbout = () => {
               Call Us
             </p>
             <a
-              href="tel:+919876543210"
+              href="tel:+919677175894"
               className="font-display italic text-[#1C1C1A] text-xl group-hover:text-[#C4956A] transition-colors duration-300"
             >
               +91 96771 75894
