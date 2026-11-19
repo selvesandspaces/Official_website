@@ -1,14 +1,25 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate, Link, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { fetchProducts, fetchMyOrders, startCheckout, verifyPayment, simulatePayment } from "../../services/shopApi";
+import PaymentOverlay from "../../components/PaymentOverlay";
+import {
+  fetchProducts,
+  fetchMyOrders,
+  fetchOrder,
+  fetchCheckoutStatus,
+  reportFailedPayment,
+  startCheckout,
+  verifyPayment,
+  simulatePayment,
+} from "../../services/shopApi";
 import { supabase } from "../../lib/supabase";
 import { fetchProfile, saveProfile } from "../../services/profileApi";
 import { errorMessage, ApiError } from "../../services/api";
-import { openRazorpay, PaymentCancelled } from "../../lib/razorpay";
+import { openRazorpay, PaymentCancelled, PaymentFailed } from "../../lib/razorpay";
 import { useAuth } from "../../hooks/useAuth";
 import { useCart } from "../../hooks/useCart";
 import { CONTACT } from "../../lib/contact";
+import { platformFee, formatINR } from "../../lib/fees";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -77,6 +88,19 @@ const profileFromForm = (f) => ({
   },
 });
 
+// Verifies a successful payment. If the verify call itself couldn't get through (network, 5xx), asks
+// the server whether the checkout was completed anyway (e.g. by Razorpay's webhook) before giving up.
+async function confirmOrder(payment) {
+  try {
+    return await verifyPayment(payment);
+  } catch (err) {
+    if (err instanceof ApiError && err.status >= 400 && err.status < 500) throw err;
+    const status = await fetchCheckoutStatus(payment.razorpay_order_id);
+    if (status.status === "paid" && status.order_id) return fetchOrder(status.order_id);
+    throw err;
+  }
+}
+
 export default function CheckoutSection() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -140,6 +164,27 @@ export default function CheckoutSection() {
   // window and presses Place Order again, we reopen it instead of creating another Razorpay order.
   const pendingCheckout = useRef(null);
 
+  // Set synchronously at the start of Place Order, so a second click or Enter press in the same
+  // tick can't start another request before `submitting` has re-rendered.
+  const inFlight = useRef(false);
+  const alertRef = useRef(null);
+
+  // Bring a new error into view; on phones the button sits below the fold and the keyboard may be open.
+  useEffect(() => {
+    if (submitError) alertRef.current?.scrollIntoView({ block: "center", behavior: "smooth" });
+  }, [submitError]);
+
+  // Leaving mid-payment would strand the customer between paying and confirmation.
+  useEffect(() => {
+    if (stage !== "paying" && stage !== "confirming") return;
+    const warn = (e) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [stage]);
+
   // Default the email to the signed-in account's until the customer types another.
   const email = form.email || user?.email || "";
 
@@ -200,6 +245,8 @@ export default function CheckoutSection() {
   }
 
   const subtotal = lineItems.reduce((sum, item) => sum + item.price * item.qty, 0);
+  const fee = platformFee(subtotal);
+  const total = subtotal + fee;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -226,7 +273,7 @@ export default function CheckoutSection() {
   // Place order: sign in first, then start checkout, pay, and verify. No order exists
   // until the server has verified the payment.
   const handleSubmit = async () => {
-    if (submitting || authLoading) return;
+    if (inFlight.current || submitting || authLoading) return;
     const errs = validate();
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
@@ -240,6 +287,7 @@ export default function CheckoutSection() {
       return;
     }
 
+    inFlight.current = true;
     setSubmitting(true);
     setStage("starting");
     let payment = null;
@@ -291,14 +339,29 @@ export default function CheckoutSection() {
       }
 
       setStage("confirming");
-      const order = await verifyPayment(payment);
+      const order = await confirmOrder(payment);
       pendingCheckout.current = null;
       clearCart();
       navigate(`/order-confirmation/${order.id}`, { replace: true, state: { order } });
     } catch (err) {
       if (import.meta.env.DEV) console.error("Place order failed:", err);
-      if (err instanceof PaymentCancelled) {
-        setSubmitError("Payment cancelled. You haven\u2019t been charged, and your bag is saved.");
+      if (err instanceof PaymentCancelled || err instanceof PaymentFailed) {
+        // The backend allows one payment attempt per checkout: close it, and start a fresh one next time.
+        const closed = pendingCheckout.current?.checkout;
+        pendingCheckout.current = null;
+        if (closed) {
+          reportFailedPayment(closed.razorpay_order_id, err instanceof PaymentFailed ? err.message : "closed_by_customer").catch(() => {});
+        }
+        setSubmitError(
+          err instanceof PaymentFailed
+            ? `${err.message} Your bag is saved, so you can try again.`
+            : "Payment cancelled. You haven\u2019t been charged, and your bag is saved."
+        );
+      } else if (payment && err instanceof ApiError && err.status === 409) {
+        pendingCheckout.current = null;
+        setSubmitError(
+          "This payment attempt was closed before it completed. If money was taken from your account, please contact us and we\u2019ll sort it out."
+        );
       } else if (err instanceof ApiError && err.status === 401) {
         // Only go back to sign-in if the session is really gone. If it's still there, the server
         // rejected a token we hold, and bouncing to /login would hide that.
@@ -318,17 +381,23 @@ export default function CheckoutSection() {
         setSubmitError(
           "Your payment went through, but we couldn\u2019t confirm your order just now. Please don\u2019t pay again. Check your orders shortly, or contact us if it doesn\u2019t appear."
         );
+      } else if (err instanceof ApiError && err.status === 422) {
+        // A product was removed or the total is invalid: reload the catalogue so the cart matches it.
+        pendingCheckout.current = null;
+        setProducts(null);
+        setSubmitError(errorMessage(err, "Something in your bag is no longer available. Please review it and try again."));
       } else {
         setSubmitError(errorMessage(err, "We couldn\u2019t start your payment. Please try again."));
       }
       setSubmitting(false);
       setStage("");
+    } finally {
+      inFlight.current = false;
     }
   };
 
   const inputStyle = (field) => ({
     width: "100%",
-    fontSize: "13.5px",
     color: "#1C1C1A",
     background: errors[field]
       ? "rgba(196,149,106,0.10)"
@@ -355,7 +424,8 @@ export default function CheckoutSection() {
       className="font-body"
       style={{ background: "#F5F0E8", minHeight: "100vh", color: "#1C1C1A" }}
     >
-      <section className="px-6 md:px-14 lg:px-24 pt-32 pb-10">
+      {submitting && <PaymentOverlay stage={stage} />}
+      <section className="px-5 sm:px-6 md:px-14 lg:px-24 pt-28 md:pt-32 pb-8 md:pb-10">
         <div className="max-w-6xl mx-auto">
           <motion.p
             className="font-body uppercase mb-4"
@@ -389,12 +459,12 @@ export default function CheckoutSection() {
         }}
       />
 
-      <section className="px-6 md:px-14 lg:px-24 py-14 pb-28">
+      <section className="px-5 sm:px-6 md:px-14 lg:px-24 py-10 md:py-14 pb-36 md:pb-28">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr,360px] gap-12 lg:gap-16 items-start">
 
             {/* ── Left: Form ── */}
-            <motion.div variants={stagger} initial="hidden" animate="show">
+            <motion.div variants={stagger} initial="hidden" animate="show" className="order-2 lg:order-1">
 
               {/* 01 — Your Details */}
               <motion.div variants={fadeUp} className="mb-10">
@@ -415,7 +485,7 @@ export default function CheckoutSection() {
                     onChange={handleChange}
                     onFocus={() => setFocused("firstName")}
                     onBlur={() => setFocused(null)}
-                    className="font-body font-light"
+                    className="font-body font-light text-base md:text-[13.5px]"
                     style={inputStyle("firstName")}
                   />
                   <input
@@ -428,7 +498,7 @@ export default function CheckoutSection() {
                     onChange={handleChange}
                     onFocus={() => setFocused("lastName")}
                     onBlur={() => setFocused(null)}
-                    className="font-body font-light"
+                    className="font-body font-light text-base md:text-[13.5px]"
                     style={inputStyle("lastName")}
                   />
                 </div>
@@ -444,7 +514,7 @@ export default function CheckoutSection() {
                     onChange={handleChange}
                     onFocus={() => setFocused("email")}
                     onBlur={() => setFocused(null)}
-                    className="font-body font-light"
+                    className="font-body font-light text-base md:text-[13.5px]"
                     style={inputStyle("email")}
                   />
                   <input
@@ -458,7 +528,7 @@ export default function CheckoutSection() {
                     onChange={handleChange}
                     onFocus={() => setFocused("phone")}
                     onBlur={() => setFocused(null)}
-                    className="font-body font-light"
+                    className="font-body font-light text-base md:text-[13.5px]"
                     style={inputStyle("phone")}
                   />
                 </div>
@@ -483,7 +553,7 @@ export default function CheckoutSection() {
                     onChange={handleChange}
                     onFocus={() => setFocused("address1")}
                     onBlur={() => setFocused(null)}
-                    className="font-body font-light"
+                    className="font-body font-light text-base md:text-[13.5px]"
                     style={inputStyle("address1")}
                   />
                   <input
@@ -496,10 +566,10 @@ export default function CheckoutSection() {
                     onChange={handleChange}
                     onFocus={() => setFocused("address2")}
                     onBlur={() => setFocused(null)}
-                    className="font-body font-light"
+                    className="font-body font-light text-base md:text-[13.5px]"
                     style={inputStyle("address2")}
                   />
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     <input
                       type="text"
                       name="city"
@@ -510,7 +580,7 @@ export default function CheckoutSection() {
                       onChange={handleChange}
                       onFocus={() => setFocused("city")}
                       onBlur={() => setFocused(null)}
-                      className="font-body font-light"
+                      className="font-body font-light text-base md:text-[13.5px] col-span-2 sm:col-span-1"
                       style={inputStyle("city")}
                     />
                     <input
@@ -523,7 +593,7 @@ export default function CheckoutSection() {
                       onChange={handleChange}
                       onFocus={() => setFocused("state")}
                       onBlur={() => setFocused(null)}
-                      className="font-body font-light"
+                      className="font-body font-light text-base md:text-[13.5px]"
                       style={inputStyle("state")}
                     />
                     <input
@@ -537,7 +607,7 @@ export default function CheckoutSection() {
                       onChange={handleChange}
                       onFocus={() => setFocused("pincode")}
                       onBlur={() => setFocused(null)}
-                      className="font-body font-light"
+                      className="font-body font-light text-base md:text-[13.5px]"
                       style={inputStyle("pincode")}
                       maxLength={6}
                     />
@@ -554,7 +624,7 @@ export default function CheckoutSection() {
                     ? `Signed in as ${user?.email}. You\u2019ll pay securely with Razorpay.`
                     : "You\u2019ll be asked to sign in or create an account, then pay securely with Razorpay."}{" "}For questions about delivery or returns, write to {CONTACT.email} or call {CONTACT.phoneDisplay}.
                 </p>
-                <div role="alert" aria-live="polite">
+                <div ref={alertRef} role="alert" aria-live="polite" className="scroll-mt-24">
                   {Object.values(errors).filter(Boolean).map((msg) => (
                     <p key={msg} className="font-body mb-1" style={{ fontSize: "12.5px", color: "#9B4A32" }}>{msg}</p>
                   ))}
@@ -598,7 +668,7 @@ export default function CheckoutSection() {
 
             {/* ── Right: Order Summary ── */}
             <motion.div
-              className="lg:sticky"
+              className="order-1 lg:order-2 lg:sticky"
               style={{ top: "100px" }}
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
@@ -620,8 +690,8 @@ export default function CheckoutSection() {
 
                 <div className="flex flex-col gap-3 mb-5">
                   {lineItems.map((item) => (
-                    <div key={item.id} className="flex items-start justify-between gap-3">
-                      <div style={{ flex: 1 }}>
+                    <div key={item.id} className="flex items-start justify-between gap-3 min-w-0">
+                      <div style={{ flex: 1, minWidth: 0, overflowWrap: "anywhere" }}>
                         <p
                           className="font-body"
                           style={{ fontSize: "13px", color: "#1C1C1A", lineHeight: 1.3 }}
@@ -658,7 +728,7 @@ export default function CheckoutSection() {
                   }}
                 />
 
-                <div className="flex justify-between mb-2">
+                <div className="flex justify-between gap-3 mb-2">
                   <span
                     className="font-body font-light"
                     style={{ fontSize: "13px", color: "rgba(28,28,26,0.54)" }}
@@ -669,7 +739,18 @@ export default function CheckoutSection() {
                     ₹{subtotal.toLocaleString("en-IN")}
                   </span>
                 </div>
-                <div className="flex justify-between mb-5">
+                <div className="flex justify-between gap-3 mb-2">
+                  <span
+                    className="font-body font-light"
+                    style={{ fontSize: "13px", color: "rgba(28,28,26,0.54)" }}
+                  >
+                    Platform fee
+                  </span>
+                  <span className="font-body" style={{ fontSize: "13px", color: "#1C1C1A" }}>
+                    ₹{formatINR(fee)}
+                  </span>
+                </div>
+                <div className="flex justify-between gap-3 mb-5">
                   <span
                     className="font-body font-light"
                     style={{ fontSize: "13px", color: "rgba(28,28,26,0.54)" }}
@@ -705,7 +786,7 @@ export default function CheckoutSection() {
                     className="font-body"
                     style={{ fontSize: "20px", fontWeight: 700, color: "#1C1C1A" }}
                   >
-                    ₹{subtotal.toLocaleString("en-IN")}
+                    ₹{formatINR(total)}
                   </span>
                 </div>
               </div>

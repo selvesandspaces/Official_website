@@ -39,6 +39,14 @@ export const startCheckout = ({ customer, shippingAddress, items }) =>
 // Safe to call more than once; the server never creates duplicates.
 export const verifyPayment = (payment) => apiFetch("/checkout/verify", { method: "POST", body: payment });
 
+// Tells the server this payment attempt failed or was closed unpaid. The backend allows one attempt
+// per checkout, so after this the customer starts a new checkout. Safe to repeat.
+export const reportFailedPayment = (razorpayOrderId, reason) =>
+  apiFetch("/checkout/failed", { method: "POST", body: { razorpay_order_id: razorpayOrderId, reason: reason?.slice(0, 200) || null } });
+
+// Where a checkout stands: { status: "created" | "paid" | "failed", order_id }.
+export const fetchCheckoutStatus = (razorpayOrderId) => apiFetch(`/checkout/${encodeURIComponent(razorpayOrderId)}`);
+
 // Dev only: the backend's RAZORPAY_MODE=dummy can't open the real popup, so it signs a fake payment.
 export const simulatePayment = (razorpayOrderId) =>
   apiFetch("/dev/razorpay/simulate-payment", { method: "POST", body: { razorpay_order_id: razorpayOrderId } });

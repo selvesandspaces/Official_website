@@ -45,7 +45,7 @@ function ProductCard({ product, index, onOpen }) {
           <div
             className="absolute top-4 left-4 font-body uppercase"
             style={{
-              fontSize: "8px",
+              fontSize: "11px",
               letterSpacing: "0.3em",
               background: product.accent,
               color: "#F5F0E8",
@@ -66,7 +66,7 @@ function ProductCard({ product, index, onOpen }) {
         </h3>
         <p
           className="font-body font-light flex-1 mb-5"
-          style={{ fontSize: "13px", lineHeight: 1.7, color: "rgba(28,28,26,0.52)", display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}
+          style={{ fontSize: "15px", lineHeight: 1.7, color: "rgba(28,28,26,0.52)", display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}
         >
           {product.tagline}
         </p>
@@ -74,14 +74,14 @@ function ProductCard({ product, index, onOpen }) {
         <div className="flex items-center justify-between">
           <span
             className="font-body"
-            style={{ fontSize: "15px", fontWeight: 600, color: product.accent }}
+            style={{ fontSize: "16px", fontWeight: 600, color: product.accent }}
           >
             ₹{product.price.toLocaleString("en-IN")}
           </span>
           <span
             className="font-body uppercase"
             style={{
-              fontSize: "8.5px",
+              fontSize: "11px",
               letterSpacing: "0.28em",
               padding: "9px 18px",
               background: hovered ? "#2C3B2D" : "transparent",
@@ -105,7 +105,7 @@ function Accordion({ label, children, defaultOpen = false }) {
       <button
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between font-body uppercase"
-        style={{ fontSize: "9px", letterSpacing: "0.40em", color: "#1C1C1A", background: "none", border: "none", cursor: "pointer", padding: "17px 0", textAlign: "left" }}
+        style={{ fontSize: "11px", letterSpacing: "0.40em", color: "#1C1C1A", background: "none", border: "none", cursor: "pointer", padding: "17px 0", textAlign: "left" }}
       >
         <span>{label}</span>
         <motion.span
@@ -157,9 +157,9 @@ function ProductDetail({ product, cart, onAddToCart, onUpdateQty, onClose }) {
   const cur = (product.currency ?? "INR").toUpperCase();
   const currencySymbol = cur === "INR" ? "₹" : cur === "USD" ? "$" : cur;
 
-  const bodyText = { fontSize: "14px", lineHeight: 1.85, color: "rgba(28,28,26,0.62)" };
-  const specLabel = { fontSize: "13px", color: "rgba(28,28,26,0.46)" };
-  const specValue = { fontSize: "13px", color: "#1C1C1A", fontWeight: 500, textAlign: "right" };
+  const bodyText = { fontSize: "16px", lineHeight: 1.85, color: "rgba(28,28,26,0.62)" };
+  const specLabel = { fontSize: "15px", color: "rgba(28,28,26,0.46)" };
+  const specValue = { fontSize: "15px", color: "#1C1C1A", fontWeight: 500, textAlign: "right" };
   const rowStyle = { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 0", borderBottom: "1px solid rgba(28,28,26,0.08)" };
 
   return (
@@ -184,20 +184,20 @@ function ProductDetail({ product, cart, onAddToCart, onUpdateQty, onClose }) {
         <button
           onClick={onClose}
           className="font-body uppercase"
-          style={{ fontSize: "10px", letterSpacing: "0.22em", color: "rgba(28,28,26,0.45)", background: "none", border: "none", cursor: "pointer", transition: "color 0.2s" }}
+          style={{ fontSize: "11px", letterSpacing: "0.22em", color: "rgba(28,28,26,0.45)", background: "none", border: "none", cursor: "pointer", transition: "color 0.2s" }}
           onMouseEnter={(e) => (e.currentTarget.style.color = "#1C1C1A")}
           onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(28,28,26,0.45)")}
         >
           ← Shop
         </button>
-        <p className="font-body uppercase hidden md:block" style={{ fontSize: "9px", letterSpacing: "0.4em", color: "rgba(28,28,26,0.28)" }}>
+        <p className="font-body uppercase hidden md:block" style={{ fontSize: "11px", letterSpacing: "0.4em", color: "rgba(28,28,26,0.28)" }}>
           Selves &amp; Spaces
         </p>
         {cartTotal > 0 && (
           <button
             onClick={onClose}
             className="font-body uppercase"
-            style={{ fontSize: "10px", letterSpacing: "0.22em", color: "#2C3B2D", background: "none", border: "none", cursor: "pointer", transition: "color 0.2s" }}
+            style={{ fontSize: "11px", letterSpacing: "0.22em", color: "#2C3B2D", background: "none", border: "none", cursor: "pointer", transition: "color 0.2s" }}
             onMouseEnter={(e) => (e.currentTarget.style.color = "#C4956A")}
             onMouseLeave={(e) => (e.currentTarget.style.color = "#2C3B2D")}
           >
@@ -257,7 +257,7 @@ function ProductDetail({ product, cart, onAddToCart, onUpdateQty, onClose }) {
           style={{ background: "#FFFFFF", borderLeft: "1px solid rgba(28,28,26,0.08)" }}
         >
           {/* Breadcrumb */}
-          <p className="font-body" style={{ fontSize: "12.5px", color: "rgba(28,28,26,0.38)" }}>
+          <p className="font-body" style={{ fontSize: "15px", color: "rgba(28,28,26,0.38)" }}>
             Shop /{" "}
             <span style={{ color: "rgba(28,28,26,0.62)" }}>{product.name}</span>
           </p>
@@ -287,7 +287,7 @@ function ProductDetail({ product, cart, onAddToCart, onUpdateQty, onClose }) {
                 <span style={specLabel}>Tags</span>
                 <div className="flex flex-wrap gap-1.5 justify-end" style={{ maxWidth: "65%" }}>
                   {product.tags.map((t, i) => (
-                    <span key={i} style={{ fontSize: "11px", padding: "3px 9px", background: "rgba(44,59,45,0.07)", color: "#2C3B2D" }}>
+                    <span key={i} style={{ fontSize: "13px", padding: "3px 9px", background: "rgba(44,59,45,0.07)", color: "#2C3B2D" }}>
                       {t}
                     </span>
                   ))}
@@ -326,7 +326,7 @@ function ProductDetail({ product, cart, onAddToCart, onUpdateQty, onClose }) {
                 <div className="flex flex-col gap-5">
                   {product.faq.map((item, i) => (
                     <div key={i}>
-                      <p className="font-body mb-1" style={{ fontSize: "13px", color: "#1C1C1A", fontWeight: 500 }}>
+                      <p className="font-body mb-1" style={{ fontSize: "15px", color: "#1C1C1A", fontWeight: 500 }}>
                         {item.question ?? item.title}
                       </p>
                       <p className="font-body font-light" style={bodyText}>{item.answer}</p>
@@ -343,7 +343,7 @@ function ProductDetail({ product, cart, onAddToCart, onUpdateQty, onClose }) {
               <button
                 onClick={() => onAddToCart(product.id, 1)}
                 className="font-body uppercase w-full"
-                style={{ fontSize: "10px", letterSpacing: "0.24em", height: "52px", background: "#1C1C1A", color: "#FFFFFF", border: "none", cursor: "pointer", transition: "background 0.3s" }}
+                style={{ fontSize: "11px", letterSpacing: "0.24em", height: "52px", background: "#1C1C1A", color: "#FFFFFF", border: "none", cursor: "pointer", transition: "background 0.3s" }}
                 onMouseEnter={(e) => { e.currentTarget.style.background = "#2C3B2D"; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = "#1C1C1A"; }}
               >
@@ -361,7 +361,7 @@ function ProductDetail({ product, cart, onAddToCart, onUpdateQty, onClose }) {
                     className="font-body"
                     aria-live="polite"
                     aria-label={`${inCart} in cart`}
-                    style={{ width: "48px", height: "52px", fontSize: "15px", color: "#1C1C1A", borderLeft: "1px solid rgba(28,28,26,0.18)", borderRight: "1px solid rgba(28,28,26,0.18)", display: "flex", alignItems: "center", justifyContent: "center" }}
+                    style={{ width: "48px", height: "52px", fontSize: "16px", color: "#1C1C1A", borderLeft: "1px solid rgba(28,28,26,0.18)", borderRight: "1px solid rgba(28,28,26,0.18)", display: "flex", alignItems: "center", justifyContent: "center" }}
                   >{inCart}</span>
                   <button
                     onClick={() => onUpdateQty(product.id, 1)}
@@ -370,7 +370,7 @@ function ProductDetail({ product, cart, onAddToCart, onUpdateQty, onClose }) {
                     style={{ width: "52px", height: "52px", fontSize: "20px", background: "none", border: "none", cursor: inCart >= MAX_QTY ? "default" : "pointer", color: "#1C1C1A", opacity: inCart >= MAX_QTY ? 0.3 : 1, display: "flex", alignItems: "center", justifyContent: "center" }}
                   >+</button>
                 </div>
-                <p className="font-body text-right" style={{ fontSize: "13px", color: "rgba(28,28,26,0.55)" }}>
+                <p className="font-body text-right" style={{ fontSize: "15px", color: "rgba(28,28,26,0.55)" }}>
                   In your cart · {currencySymbol}{(product.price * inCart).toLocaleString("en-IN")}
                 </p>
               </div>
@@ -441,7 +441,7 @@ function CartFAB({ totalItems, onClick }) {
               borderRadius: "50%",
               background: "#C4956A",
               color: "#F5F0E8",
-              fontSize: "10px",
+              fontSize: "11px",
               fontWeight: 700,
               display: "flex",
               alignItems: "center",
@@ -485,13 +485,13 @@ function CartItem({ item, onUpdate, onRemove }) {
           <div>
             <p
               className="font-body"
-              style={{ fontSize: "13px", fontWeight: 600, color: "#1C1C1A", lineHeight: 1.3 }}
+              style={{ fontSize: "15px", fontWeight: 600, color: "#1C1C1A", lineHeight: 1.3 }}
             >
               {item.name}
             </p>
             <p
               className="font-body font-light mt-0.5"
-              style={{ fontSize: "12px", color: "rgba(28,28,26,0.44)" }}
+              style={{ fontSize: "15px", color: "rgba(28,28,26,0.44)" }}
             >
               ₹{item.price.toLocaleString("en-IN")} each
             </p>
@@ -500,7 +500,7 @@ function CartItem({ item, onUpdate, onRemove }) {
             onClick={() => onRemove(item.id)}
             className="font-body uppercase shrink-0"
             style={{
-              fontSize: "9px",
+              fontSize: "11px",
               letterSpacing: "0.18em",
               color: "rgba(28,28,26,0.30)",
               background: "none",
@@ -526,7 +526,7 @@ function CartItem({ item, onUpdate, onRemove }) {
               style={{
                 width: "28px",
                 height: "28px",
-                fontSize: "16px",
+                fontSize: "17px",
                 background: "none",
                 border: "none",
                 cursor: "pointer",
@@ -544,7 +544,7 @@ function CartItem({ item, onUpdate, onRemove }) {
                 width: "28px",
                 height: "28px",
                 textAlign: "center",
-                fontSize: "13px",
+                fontSize: "15px",
                 color: "#1C1C1A",
                 borderLeft: "1px solid rgba(28,28,26,0.14)",
                 borderRight: "1px solid rgba(28,28,26,0.14)",
@@ -560,7 +560,7 @@ function CartItem({ item, onUpdate, onRemove }) {
               style={{
                 width: "28px",
                 height: "28px",
-                fontSize: "16px",
+                fontSize: "17px",
                 background: "none",
                 border: "none",
                 cursor: "pointer",
@@ -576,7 +576,7 @@ function CartItem({ item, onUpdate, onRemove }) {
 
           <span
             className="font-body"
-            style={{ fontSize: "14px", fontWeight: 600, color: item.accent }}
+            style={{ fontSize: "16px", fontWeight: 600, color: item.accent }}
           >
             ₹{(item.price * item.qty).toLocaleString("en-IN")}
           </span>
@@ -649,7 +649,7 @@ function CartDrawer({ cart, products, onUpdate, onRemove, onClose, onCheckout })
             <span
               className="font-body uppercase"
               style={{
-                fontSize: "9.5px",
+                fontSize: "11px",
                 letterSpacing: "0.26em",
                 color: "rgba(28,28,26,0.38)",
               }}
@@ -661,7 +661,7 @@ function CartDrawer({ cart, products, onUpdate, onRemove, onClose, onCheckout })
             onClick={onClose}
             className="font-body uppercase"
             style={{
-              fontSize: "10px",
+              fontSize: "11px",
               letterSpacing: "0.22em",
               color: "rgba(28,28,26,0.36)",
               background: "none",
@@ -692,7 +692,7 @@ function CartDrawer({ cart, products, onUpdate, onRemove, onClose, onCheckout })
               <p
                 className="font-body font-light"
                 style={{
-                  fontSize: "13px",
+                  fontSize: "15px",
                   color: "rgba(28,28,26,0.40)",
                   textAlign: "center",
                 }}
@@ -723,7 +723,7 @@ function CartDrawer({ cart, products, onUpdate, onRemove, onClose, onCheckout })
               <span
                 className="font-body uppercase"
                 style={{
-                  fontSize: "9.5px",
+                  fontSize: "11px",
                   letterSpacing: "0.26em",
                   color: "rgba(28,28,26,0.46)",
                 }}
@@ -732,7 +732,7 @@ function CartDrawer({ cart, products, onUpdate, onRemove, onClose, onCheckout })
               </span>
               <span
                 className="font-body"
-                style={{ fontSize: "15px", fontWeight: 600, color: "#1C1C1A" }}
+                style={{ fontSize: "16px", fontWeight: 600, color: "#1C1C1A" }}
               >
                 ₹{subtotal.toLocaleString("en-IN")}
               </span>
@@ -740,7 +740,7 @@ function CartDrawer({ cart, products, onUpdate, onRemove, onClose, onCheckout })
             <p
               className="font-body font-light mb-5"
               style={{
-                fontSize: "11px",
+                fontSize: "13px",
                 color: "rgba(28,28,26,0.36)",
                 letterSpacing: "0.1em",
               }}
@@ -751,7 +751,7 @@ function CartDrawer({ cart, products, onUpdate, onRemove, onClose, onCheckout })
               onClick={onCheckout}
               className="font-body uppercase w-full"
               style={{
-                fontSize: "10px",
+                fontSize: "11px",
                 letterSpacing: "0.26em",
                 padding: "14px 24px",
                 background: btnHovered ? "#C4956A" : "#2C3B2D",
@@ -821,7 +821,7 @@ export default function ShopSection() {
         <div className="max-w-6xl mx-auto">
           <motion.p
             className="font-body uppercase mb-4"
-            style={{ fontSize: "10px", letterSpacing: "0.44em", color: "#8A9E85" }}
+            style={{ fontSize: "11px", letterSpacing: "0.44em", color: "#8A9E85" }}
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -844,7 +844,7 @@ export default function ShopSection() {
           <motion.p
             className="font-body font-light mt-5"
             style={{
-              fontSize: "15px",
+              fontSize: "16px",
               lineHeight: 1.85,
               color: "rgba(28,28,26,0.52)",
               maxWidth: "480px",
